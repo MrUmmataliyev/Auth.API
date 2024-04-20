@@ -72,5 +72,11 @@ namespace Auth.Controllers
             return Ok(result);
          
         }
+        [HttpGet]
+        public async Task<ActionResult<string>> GetByIdUser(string id)
+        {
+            var result = await _userManager.FindByIdAsync(id);
+            return Ok(result);
+        }
     }
 }
