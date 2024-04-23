@@ -1,5 +1,7 @@
 ﻿using Auth.DTOs;
 using Auth.MyModels;
+using Auth.Services.AuthService;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -13,12 +15,15 @@ namespace Auth.Controllers
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
-        public UsersController(UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager)
+        private readonly IAuthService _authService;
+        public UsersController(UserManager<AppUser> userManager, IAuthService authService , RoleManager<IdentityRole> roleManager)
         {
             _roleManager = roleManager;
             _userManager = userManager;
+            _authService = authService;
         }
         [HttpPost]
+        [AllowAnonymous]
         public async Task<ActionResult<string>> Regsiter(RegisterDTO registerDTO)
         {
             if (!ModelState.IsValid)
@@ -63,9 +68,11 @@ namespace Auth.Controllers
             {
                 return Unauthorized("Password invalid");
             }
-            return Ok("Welcome");
+            var token = await _authService.GenerateToken(user);
+            return Ok(token);
         }
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<string>> GetAllUsers() 
         {
             var result = await _userManager.Users.ToListAsync();
