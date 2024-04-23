@@ -49,9 +49,29 @@ namespace Auth.Controllers
             return Ok(roles);
         }
         [HttpPut]
-        public async Task<ActionResult<IdentityRole>> UpdateRole(string id, RoleDTO role)
+        public async Task<ActionResult<IdentityRole>> UpdateRole(Guid id, RoleDTO newRole)
         {
-            var change = await _roleManager.UpdateAsync(id, role);
+            var old = await _roleManager.FindByIdAsync(id.ToString());
+            if(old != null)
+            {
+                old.Name = newRole.RoleName;
+                return Ok(old);
+            }
+            else
+            {
+                return Ok("Role is empty");
+            }
+        }
+        [HttpDelete]
+        public async Task<ActionResult<string>> DeleteRole(Guid id)
+        {
+            var role = await _roleManager.FindByIdAsync(id.ToString());
+            if (role != null)
+            {
+                var res = await _roleManager.DeleteAsync(role);
+                return Ok("Deleted");
+            }
+            return Ok("Role not found");
         }
     }
 }
