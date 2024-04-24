@@ -46,11 +46,14 @@ namespace Auth.Services.AuthService
                 new(JwtRegisteredClaimNames.Aud, _configuration["JWTSettings:ValidAudience"]!),
                 new(JwtRegisteredClaimNames.Iss, _configuration["JWTSettings:ValidIssuer"]!),
                 new(JwtRegisteredClaimNames.Exp, _configuration["JWTSettings:ExpireDate"]!),
+
               ];
             foreach(string role in roles)
             {
-                claims.Add(new Claim(ClaimTypes.Role, role));
+              
+                  claims.Add(new Claim(ClaimTypes.Role, role));
             }
+
             var tokenDeskriptor = new SecurityTokenDescriptor()
             {
                 Subject = new ClaimsIdentity(claims),
