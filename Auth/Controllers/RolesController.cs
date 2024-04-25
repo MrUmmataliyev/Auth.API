@@ -1,4 +1,5 @@
 ﻿using Auth.DTOs;
+using Auth.filters;
 using Auth.MyModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -19,6 +20,9 @@ namespace Auth.Controllers
             _roleManager = roleManager;
         }
         [HttpPost]
+        [MyActionFilter]
+        [MyAuthorizationFilter]
+        [MyValidationFilter]
         public async Task<ActionResult<ResponseDTO>> CreateRole(RoleDTO role) 
         {
             var result = await _roleManager.FindByNameAsync(role.RoleName);
@@ -42,6 +46,7 @@ namespace Auth.Controllers
             });
         }
         [HttpGet]
+        [MyExceptionFilter]
         public async Task<ActionResult<List<IdentityRole>>> GetAllRoles()
         {
             var roles = await _roleManager.Roles.ToListAsync();
@@ -49,6 +54,7 @@ namespace Auth.Controllers
             return Ok(roles);
         }
         [HttpPut]
+        [MyResourceFilter]
         public async Task<ActionResult<IdentityRole>> UpdateRole(Guid id, RoleDTO newRole)
         {
             var old = await _roleManager.FindByIdAsync(id.ToString());
@@ -63,6 +69,7 @@ namespace Auth.Controllers
             }
         }
         [HttpDelete]
+        [MyResultFilter]
         public async Task<ActionResult<string>> DeleteRole(Guid id)
         {
             var role = await _roleManager.FindByIdAsync(id.ToString());
